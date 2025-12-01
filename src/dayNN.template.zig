@@ -1,5 +1,4 @@
 const std = @import("std");
-const helpers = @import("helpers.zig");
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 const allocator = gpa.allocator();

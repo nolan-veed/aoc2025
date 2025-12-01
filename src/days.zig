@@ -1,4 +1,4 @@
-const day = @import("dayNN.template.zig");
+const day = @import("day01.zig");
 pub fn run() !void {
     try day.run();
 }
