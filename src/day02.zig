@@ -6,11 +6,6 @@ const allocator = gpa.allocator();
 pub fn run() !void {
     std.debug.print("run\n", .{});
 
-    // const some_number = try allocator.create(u32);
-    // defer allocator.destroy(some_number);
-    // some_number.* = @as(u32, 45);
-    // std.debug.print("some_number: {}", .{some_number.*});
-
     const f = try std.fs.cwd().openFile("input02.txt", .{ .mode = .read_only });
     defer f.close();
     var read_buffer: [1024]u8 = undefined;
@@ -21,6 +16,7 @@ pub fn run() !void {
     @memset(buffer[0..], 0);
 
     var sum: u64 = 0;
+    const part1 = false;
 
     while (try reader.takeDelimiter(',')) |line| {
         std.debug.print("{s}\n", .{line});
@@ -42,17 +38,41 @@ pub fn run() !void {
         var i = v1;
         while (i <= v2) : (i += 1) {
             const s = try std.fmt.bufPrint(&buffer, "{}", .{i});
-            if (s.len % 2 != 0)
-                continue;
-            const s2_start = s.len / 2;
-            const s1 = s[0..s2_start];
-            const s2 = s[s2_start..s.len];
-            const eql = std.mem.eql(u8, s1, s2);
-            if (eql) {
-                std.debug.print("eql: s1={s} s2={s}\n", .{ s1, s2 });
-                sum += i;
+            if (part1) {
+                if (s.len % 2 != 0)
+                    continue;
+                const s2_start = s.len / 2;
+                const s1 = s[0..s2_start];
+                const s2 = s[s2_start..s.len];
+                const eql = std.mem.eql(u8, s1, s2);
+                if (eql) {
+                    std.debug.print("eql: s1={s} s2={s} i={d}\n", .{ s1, s2, i });
+                    sum += i;
+                }
+            } else {
+                var sz: u32 = 1;
+                while (sz <= s.len / 2) : (sz += 1) {
+                    const rem = s.len % sz;
+                    if (rem > 0) continue;
+                    const s1 = s[0..sz];
+                    var isInvalid = true;
+                    var j = sz;
+                    while (j < s.len) : (j += sz) {
+                        const s2 = s[j .. j + sz];
+                        const eql = std.mem.eql(u8, s1, s2);
+                        if (!eql) {
+                            isInvalid = false;
+                            break;
+                        }
+                    }
+                    if (isInvalid) {
+                        std.debug.print("isInvalid: i={d}\n", .{i});
+                        sum += i;
+                        break;
+                    }
+                }
             }
         }
     }
-    std.debug.print("part1: {}\n", .{sum});
+    std.debug.print("part1={} sum={}\n", .{ part1, sum });
 }
