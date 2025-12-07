@@ -1,4 +1,4 @@
-const day = @import("day06.zig");
+const day = @import("day07.zig");
 pub fn run() !void {
     try day.run();
 }
